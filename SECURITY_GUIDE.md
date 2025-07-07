@@ -3,6 +3,7 @@
 ## Fitur Keamanan yang Diimplementasikan
 
 ### 1. **Sistem Autentikasi Multi-Layer**
+
 - ✅ Kode akses unik untuk setiap tamu
 - ✅ Validasi nama tamu dengan guest list
 - ✅ URL parameter authentication
@@ -10,30 +11,34 @@
 - ✅ Master codes untuk admin access
 
 ### 2. **Rate Limiting & Lockout Protection**
+
 - ✅ Maksimal 5 percobaan login per 5 menit
 - ✅ Auto-lockout selama 5 menit setelah gagal
 - ✅ Real-time countdown timer
 - ✅ Per-user tracking untuk mencegah abuse
 
 ### 3. **Enkripsi Data Sensitif**
+
 - ✅ Nomor rekening bank dienkripsi dengan AES
 - ✅ Secret key terpisah dari kode utama
 - ✅ Dekripsi otomatis saat ditampilkan
 - ✅ Copy to clipboard menggunakan data terdekripsi
 
 ### 4. **Time-based Access Control**
+
 - ✅ Undangan hanya aktif dalam rentang waktu tertentu
 - ✅ Periode akses: 20 Desember - 26 Desember 2024
 - ✅ Auto-blocking di luar periode tersebut
 
 ### 5. **Input Sanitization & XSS Protection**
+
 - ✅ Sanitasi input untuk mencegah XSS
 - ✅ Validasi karakter berbahaya
 - ✅ Security headers di HTML meta tags
 
 ## Cara Menggunakan
 
-### Untuk Penyelenggara Acara:
+### Untuk Penyelenggara Acara
 
 1. **Setup Guest List**
    - Edit `src/config/config.js`
@@ -41,9 +46,11 @@
    - Berikan kode akses unik untuk setiap tamu
 
 2. **Generate Invitation URLs**
+
    ```bash
    node src/lib/generateInvites.js
    ```
+
    Script ini akan menghasilkan:
    - URL unik untuk setiap tamu
    - Link WhatsApp ready-to-send
@@ -54,7 +61,7 @@
    - Atau berikan kode akses secara terpisah
    - Pastikan tamu memasukkan nama yang sesuai
 
-### Untuk Tamu:
+### Untuk Tamu
 
 1. **Akses Melalui URL**
    - Klik link yang diberikan
@@ -70,7 +77,8 @@
 
 ## Konfigurasi Keamanan
 
-### Guest List Example:
+### Guest List Example
+
 ```javascript
 {
   id: 1,
@@ -84,12 +92,14 @@
 }
 ```
 
-### Master Codes:
+### Master Codes
+
 - `ADMIN2024` - Admin access
 - `ORGANIZER24` - Organizer access  
 - `MASTER2024` - Master access
 
-### Security Settings:
+### Security Settings
+
 ```javascript
 security: {
   accessControl: {
@@ -109,35 +119,39 @@ security: {
 
 ## Testing Credentials
 
-### Sample Guest Accounts:
+### Sample Guest Accounts
+
 1. **John Doe** - Code: `JOHN2024`
 2. **Jane Smith** - Code: `JANE2024`  
 3. **Ahmad Rahman** - Code: `AHMAD24`
 4. **Sarah Johnson** - Code: `SARAH24`
 5. **Michael Chen** - Code: `MIKE2024`
 
-### Admin Access:
+### Admin Access
+
 - Name: `Admin` - Code: `ADMIN2024`
 - Name: `Organizer` - Code: `ORGANIZER24`
 - Name: `Master` - Code: `MASTER2024`
 
 ## URL Examples
 
-### Direct Access URLs:
-```
+### Direct Access URLs
+
+```bash
 http://localhost:5173?code=JOHN2024
 http://localhost:5173?code=JANE2024
 http://localhost:5173?code=ADMIN2024
 ```
 
-### WhatsApp Share Format:
-```
+### WhatsApp Share Format
+
+```bash
 https://wa.me/6281234567890?text=Halo John! Kode akses undangan: JOHN2024. Link: http://localhost:5173?code=JOHN2024
 ```
 
 ## Troubleshooting
 
-### Common Issues:
+### Common Issues
 
 1. **"Kode akses tidak valid"**
    - Periksa ejaan kode akses
@@ -158,9 +172,10 @@ https://wa.me/6281234567890?text=Halo John! Kode akses undangan: JOHN2024. Link:
 
 ## Security Best Practices
 
-### Untuk Production:
+### Untuk Production
 
 1. **Environment Variables**
+
    ```bash
    VITE_SECRET_KEY=your-secret-key-here
    VITE_BASE_URL=https://your-domain.com
@@ -182,13 +197,15 @@ https://wa.me/6281234567890?text=Halo John! Kode akses undangan: JOHN2024. Link:
 
 ## Monitoring & Analytics
 
-### Check Session Data:
+### Check Session Data
+
 ```javascript
 // In browser console
 localStorage.getItem('undangin_session')
 ```
 
-### Clear All Sessions:
+### Clear All Sessions
+
 ```javascript
 // Reset all authentication
 localStorage.clear()
