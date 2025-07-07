@@ -1,9 +1,9 @@
-// Nanti convert ke Bahasa Indonesia
+// Wedding Invitation Configuration
 const config = {
   data: {
-    title: "Pernikahan Fulan & Fulana", // Nanti ini otomatis
+    title: "Pernikahan Fulan & Fulana",
     description:
-      "Kami akan menikah dan mengundang Anda untuk turut merayakan momen istimewa ini.", // Nanti ini dibikin random
+      "Kami akan menikah dan mengundang Anda untuk turut merayakan momen istimewa ini.",
     groomName: "Fulan",
     brideName: "Fulana",
     parentGroom: "Bapak Groom & Ibu Groom",
@@ -36,24 +36,111 @@ const config = {
       }
     ],
     audio: {
-      src: "/audio/fulfilling-humming.mp3", // or /audio/nature-sound.mp3
-      title: "Fulfilling Humming", // or Nature Sound
+      src: "/audio/fulfilling-humming.mp3",
+      title: "Fulfilling Humming",
       autoplay: true,
       loop: true
     },
+    // Encrypted bank account data for security
     banks: [
       {
         bank: "Bank Central Asia",
-        accountNumber: "1234567890",
+        accountNumber: "U2FsdGVkX1+J+y5oclc1CCsV7ZveiWZy1KcbdZCLTV4=", // Encrypted: 1234567890
         accountName: "FULAN",
       },
       {
         bank: "Bank Mandiri",
-        accountNumber: "0987654321",
+        accountNumber: "U2FsdGVkX1/NURthRAjddnRyxGkQj2sitOIuSzioGNk=", // Encrypted: 0987654321
         accountName: "FULANA",
       }
     ]
-  }
+  },
+  
+  // Security configuration
+  security: {
+    // Access control settings
+    accessControl: {
+      enabled: true,
+      requireCode: true,
+      requireGuestValidation: true,
+      maxLoginAttempts: 5,
+      lockoutDuration: 300000, // 5 minutes in milliseconds
+    },
+    
+    // Access window (invitation active period)
+    accessWindow: {
+      enabled: true,
+      startDate: "2024-12-20T00:00:00Z",
+      endDate: "2024-12-26T23:59:59Z",
+    },
+    
+    // Session settings
+    session: {
+      duration: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+      autoExtend: true,
+    }
+  },
+  
+  // Guest list with access codes
+  guestList: [
+    {
+      id: 1,
+      name: "John Doe",
+      code: "JOHN2024",
+      email: "john@example.com",
+      phone: "+62812345678",
+      category: "family",
+      allowedGuests: 2,
+      specialNotes: "Vegetarian meal"
+    },
+    {
+      id: 2,
+      name: "Jane Smith",
+      code: "JANE2024",
+      email: "jane@example.com",
+      phone: "+62812345679",
+      category: "friend",
+      allowedGuests: 1,
+      specialNotes: ""
+    },
+    {
+      id: 3,
+      name: "Ahmad Rahman",
+      code: "AHMAD24",
+      email: "ahmad@example.com",
+      phone: "+62812345680",
+      category: "colleague",
+      allowedGuests: 2,
+      specialNotes: "Halal meal required"
+    },
+    {
+      id: 4,
+      name: "Sarah Johnson",
+      code: "SARAH24",
+      email: "sarah@example.com",
+      phone: "+62812345681",
+      category: "family",
+      allowedGuests: 3,
+      specialNotes: "Child seat needed"
+    },
+    {
+      id: 5,
+      name: "Michael Chen",
+      code: "MIKE2024",
+      email: "michael@example.com",
+      phone: "+62812345682",
+      category: "friend",
+      allowedGuests: 1,
+      specialNotes: ""
+    }
+  ],
+  
+  // Master access codes for organizers
+  masterCodes: [
+    "ADMIN2024",
+    "ORGANIZER24",
+    "MASTER2024"
+  ]
 };
 
 export default config;

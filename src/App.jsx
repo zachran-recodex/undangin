@@ -15,26 +15,26 @@
  */
 
 // src/App.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import Layout from '@/components/Layout';
 import MainContent from '@/pages/MainContent';
 import LandingPage from '@/pages/LandingPage';
+import AuthPage from '@/pages/AuthPage';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import config from '@/config/config';
+import { validateGuestSession } from '@/lib/auth';
 
 /**
- * App component serves as the root of the application.
+ * App component serves as the root of the application with authentication.
  *
- * It manages the state to determine whether the invitation content should be shown.
- * Initially, the invitation is closed and the LandingPage component is rendered.
- * Once triggered, the Layout component containing MainContent is displayed.
- *
- * This component also uses HelmetProvider and Helmet to set up various meta tags:
- *   - Primary meta tags: title and description.
- *   - Open Graph tags for Facebook.
- *   - Twitter meta tags for summary and large image preview.
- *   - Favicon link and additional meta tags for responsive design and theme color.
+ * It manages the authentication state and invitation content display.
+ * The flow is: AuthPage -> LandingPage -> MainContent
+ * 
+ * Authentication features:
+ * - Session validation on app load
+ * - Guest access control with codes
+ * - Secure invitation viewing
  *
  * @component
  * @example
@@ -42,7 +42,71 @@ import config from '@/config/config';
  * <App />
  */
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isInvitationOpen, setIsInvitationOpen] = useState(false);
+  const [guestSession, setGuestSession] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Check existing session on app load
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        // Check if access control is enabled
+        if (!config.security.accessControl.enabled) {
+          setIsAuthenticated(true);
+          setIsLoading(false);
+          return;
+        }
+
+        // Validate existing session
+        const session = validateGuestSession();
+        if (session) {
+          setIsAuthenticated(true);
+          setGuestSession(session);
+          
+          // If session exists, auto-extend it
+          if (config.security.session.autoExtend) {
+            const updatedSession = {
+              ...session,
+              timestamp: Date.now()
+            };
+            localStorage.setItem('undangin_session', JSON.stringify(updatedSession));
+            setGuestSession(updatedSession);
+          }
+        }
+      } catch (error) {
+        console.error('Session validation error:', error);
+        // Clear any corrupted session data
+        localStorage.removeItem('undangin_session');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkSession();
+  }, []);
+
+  const handleAuthSuccess = (session) => {
+    setIsAuthenticated(true);
+    setGuestSession(session);
+  };
+
+  const handleOpenInvitation = () => {
+    setIsInvitationOpen(true);
+  };
+
+  // Show loading spinner while checking session
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 via-white to-pink-50">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-rose-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Memuat undangan...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <HelmetProvider>
       <Helmet>
@@ -70,15 +134,25 @@ function App() {
 
         {/* Additional Meta Tags */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="theme-color" content="#FDA4AF" /> {/* Rose-300 color */}
+        <meta name="theme-color" content="#FDA4AF" />
+        
+        {/* Security Headers */}
+        <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
+        <meta httpEquiv="X-Frame-Options" content="DENY" />
+        <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
       </Helmet>
 
       <AnimatePresence mode='wait'>
-        {!isInvitationOpen ? (
-          <LandingPage onOpenInvitation={() => setIsInvitationOpen(true)} />
+        {!isAuthenticated ? (
+          <AuthPage onAuthSuccess={handleAuthSuccess} />
+        ) : !isInvitationOpen ? (
+          <LandingPage 
+            onOpenInvitation={handleOpenInvitation} 
+            guestSession={guestSession}
+          />
         ) : (
-          <Layout>
-            <MainContent />
+          <Layout guestSession={guestSession}>
+            <MainContent guestSession={guestSession} />
           </Layout>
         )}
       </AnimatePresence>

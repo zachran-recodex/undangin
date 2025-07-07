@@ -8,6 +8,7 @@ import {
     Building2,
 } from 'lucide-react'
 import { useState, useEffect } from 'react';
+import { decrypt } from '@/lib/auth';
 
 export default function Gifts() {
     const [copiedAccount, setCopiedAccount] = useState(null);
@@ -18,8 +19,9 @@ export default function Gifts() {
         setHasAnimated(true);
     }, []);
     
-    const copyToClipboard = (text, bank) => {
-        navigator.clipboard.writeText(text);
+    const copyToClipboard = (encryptedText, bank) => {
+        const decryptedText = decrypt(encryptedText);
+        navigator.clipboard.writeText(decryptedText);
         setCopiedAccount(bank);
         setTimeout(() => setCopiedAccount(null), 2000);
     };
@@ -132,7 +134,7 @@ export default function Gifts() {
 
                                 <div className="mt-4">
                                     <div className="flex items-center justify-between bg-gray-50/80 px-4 py-3 rounded-lg">
-                                        <p className="font-mono text-gray-700">{account.accountNumber}</p>
+                                        <p className="font-mono text-gray-700">{decrypt(account.accountNumber)}</p>
                                         <motion.button
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}

@@ -2,10 +2,17 @@
 import config from '@/config/config';
 import { formatEventDate } from '@/lib/formatEventDate';
 import { motion } from 'framer-motion';
-import { Calendar, Clock } from 'lucide-react';
+import { Calendar, Clock, User, LogOut } from 'lucide-react';
+import { clearGuestSession } from '@/lib/auth';
 
-const LandingPage = ({ onOpenInvitation }) => (
-  <motion.div
+const LandingPage = ({ onOpenInvitation, guestSession }) => {
+  const handleLogout = () => {
+    clearGuestSession();
+    window.location.reload();
+  };
+
+  return (
+    <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
@@ -15,6 +22,37 @@ const LandingPage = ({ onOpenInvitation }) => (
     <div className="absolute inset-0 bg-gradient-to-b from-white via-rose-50/30 to-white" />
     <div className="absolute top-0 right-0 w-64 h-64 md:w-96 md:h-96 bg-rose-100/20 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
     <div className="absolute bottom-0 left-0 w-64 h-64 md:w-96 md:h-96 bg-pink-100/20 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2" />
+
+    {/* User Info Bar */}
+    {guestSession && (
+      <div className="absolute top-4 right-4 z-20">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="flex items-center gap-3 backdrop-blur-sm bg-white/80 px-4 py-2 rounded-full border border-rose-100/50 shadow-lg"
+        >
+          <div className="flex items-center gap-2">
+            <User className="w-4 h-4 text-rose-500" />
+            <span className="text-sm font-medium text-gray-700">
+              {guestSession.name}
+            </span>
+            {guestSession.isMaster && (
+              <span className="text-xs bg-rose-100 text-rose-600 px-2 py-0.5 rounded-full">
+                Admin
+              </span>
+            )}
+          </div>
+          <button
+            onClick={handleLogout}
+            className="p-1 hover:bg-rose-50 rounded-full transition-colors"
+            title="Logout"
+          >
+            <LogOut className="w-4 h-4 text-gray-500" />
+          </button>
+        </motion.div>
+      </div>
+    )}
 
     {/* Main Content */}
     <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
@@ -26,6 +64,27 @@ const LandingPage = ({ onOpenInvitation }) => (
       >
         {/* Card Container */}
         <div className="backdrop-blur-sm bg-white/50 p-6 sm:p-8 md:p-10 rounded-2xl border border-rose-100/50 shadow-xl">
+          {/* Personal Greeting */}
+          {guestSession && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-center mb-4"
+            >
+              <p className="text-rose-600 font-medium text-sm">
+                {guestSession.isMaster ? 'Selamat datang, Admin!' : `Halo, ${guestSession.name}!`}
+              </p>
+              {guestSession.category && !guestSession.isMaster && (
+                <p className="text-gray-500 text-xs mt-1">
+                  Kategori: {guestSession.category === 'family' ? 'Keluarga' : 
+                           guestSession.category === 'friend' ? 'Teman' : 
+                           guestSession.category === 'colleague' ? 'Rekan Kerja' : 'Tamu'}
+                </p>
+              )}
+            </motion.div>
+          )}
+
           {/* Top Decorative Line */}
           <div className="flex items-center justify-center gap-3 mb-6 sm:mb-8">
             <div className="h-px w-12 sm:w-16 bg-rose-200/50" />
@@ -100,7 +159,8 @@ const LandingPage = ({ onOpenInvitation }) => (
         </div>
       </motion.div>
     </div>
-  </motion.div>
-);
+    </motion.div>
+  );
+};
 
 export default LandingPage;
